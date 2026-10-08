@@ -78,9 +78,11 @@
     }
     render();
   }
-  function render() {
-    gallery.replaceChildren();
-    collection.slice(0, visible).forEach((p, i) => {
+  function render({append = false} = {}) {
+    const start = append ? gallery.children.length : 0;
+    if (!append) gallery.replaceChildren();
+    collection.slice(start, visible).forEach((p, offset) => {
+      const i = start + offset;
       const b = document.createElement('button'); b.type = 'button'; b.className = 'photo-card'; b.dataset.ratio = p.width / p.height;
       b.setAttribute('aria-label',`${t('View photograph:')} ${photo(p)}`);
       const img = document.createElement('img'); img.src = p.src; img.alt = photo(p); img.width = p.width; img.height = p.height; img.decoding = 'async'; img.loading = i < 6 ? 'eager' : 'lazy';
@@ -106,7 +108,7 @@
   }
   more.addEventListener('click', () => {
     const before = Math.min(visible, collection.length);
-    visible += 18; render();
+    visible += 18; render({append:true});
     const firstNew = gallery.children[before];
     if (firstNew) firstNew.focus({preventScroll:true});
   });
